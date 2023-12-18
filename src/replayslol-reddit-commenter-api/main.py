@@ -23,6 +23,7 @@ async def get_reddit_comment(db: db_dependency,
                              patch: Optional[str] = None,
                              replay_link: Optional[str] = None,
                              reddit_link: Optional[str] = None,
+                             subreddit: Optional[str] = None,
                              ready_to_be_replied_to: Optional[bool] = None,
                              error: Optional[str] = None,
                              media_id: Optional[str] = None,
@@ -50,6 +51,8 @@ async def get_reddit_comment(db: db_dependency,
         query = query.filter(models.RedditComment.replay_link == replay_link)
     if reddit_link is not None:
         query = query.filter(models.RedditComment.reddit_link == reddit_link)
+    if subreddit is not None:
+        query = query.filter(models.RedditComment.subreddit == subreddit)
     if ready_to_be_replied_to is not None:
         query = query.filter(models.RedditComment.ready_to_be_replied_to == ready_to_be_replied_to)
     if error is not None:

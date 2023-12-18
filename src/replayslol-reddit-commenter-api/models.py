@@ -16,6 +16,7 @@ class RedditComment(Base):
     patch = Column(String)
     replay_link = Column(String)
     reddit_link = Column(String)
+    subreddit = Column(String)
     ready_to_be_replied_to = Column(Boolean)
     error = Column(String)
     media_id = Column(String)
