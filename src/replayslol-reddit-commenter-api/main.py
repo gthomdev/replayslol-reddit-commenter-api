@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
 from typing import Annotated, Optional
 import models
+from schemas import UpdateRedditComment
 from database import get_db, engine
 
 app = FastAPI()
@@ -59,5 +60,34 @@ async def get_reddit_comment(db: db_dependency,
         query = query.filter(models.RedditComment.error == error)
     if media_id is not None:
         query = query.filter(models.RedditComment.media_id == media_id)
-    return query.all()
+    return query.all() if not None else HTTPException(status_code=404, detail="RedditComment not found")
 
+
+@app.patch("/reddit_comments/update-by-row-id/{row_id}")
+async def update_reddit_comment_by_row_id(db: db_dependency,
+                                          row_id: int,
+                                          update_data: UpdateRedditComment):
+    comment = db.query(models.RedditComment).filter(models.RedditComment.id == row_id).first()
+    if comment is None:
+        raise HTTPException(status_code=404, detail="RedditComment not found")
+    for var, value in vars(update_data).items():
+        if value is not None:
+            setattr(comment, var, value)
+    db.commit()
+    db.refresh(comment)
+    return comment
+
+
+@app.patch("/reddit_comments/update-by-media-id/{media_id}")
+async def update_reddit_comment_by_row_id(db: db_dependency,
+                                          media_id: str,
+                                          update_data: UpdateRedditComment):
+    comment = db.query(models.RedditComment).filter(models.RedditComment.media_id == media_id).first()
+    if comment is None:
+        raise HTTPException(status_code=404, detail="RedditComment not found")
+    for var, value in vars(update_data).items():
+        if value is not None:
+            setattr(comment, var, value)
+    db.commit()
+    db.refresh(comment)
+    return comment
