@@ -3,7 +3,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from typing import Annotated, Optional
 import models
-from schemas import UpdateRedditComment, User
+from schemas import UpdateRedditComment
 from database import get_db, engine
 from credentials import Credentials
 
