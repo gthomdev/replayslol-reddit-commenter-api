@@ -1,18 +1,30 @@
 from fastapi import FastAPI, HTTPException, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from typing import Annotated, Optional
 import models
-from schemas import UpdateRedditComment
+from schemas import UpdateRedditComment, User
 from database import get_db, engine
+from credentials import Credentials
 
 app = FastAPI()
-models.Base.metadata.create_all(bind=engine)
 
+token_auth_scheme = HTTPBearer()
+valid_tokens = Credentials().valid_tokens
+models.Base.metadata.create_all(bind=engine)
 db_dependency = Annotated[Session, Depends(get_db)]
 
 
+def validate_token(http_auth_credentials: HTTPAuthorizationCredentials = Depends(token_auth_scheme)):
+    if http_auth_credentials.scheme != "Bearer":
+        print(str(http_auth_credentials))
+        raise HTTPException(status_code=403, detail="Invalid authentication scheme")
+    if http_auth_credentials.credentials not in valid_tokens:
+        raise HTTPException(status_code=403, detail="Invalid token")
+
 @app.get("/reddit_comments/")
 async def get_reddit_comment(db: db_dependency,
+                             token: Annotated[str, Depends(validate_token)],
                              id: Optional[int] = None,
                              region: Optional[str] = None,
                              summoner_name: Optional[str] = None,
@@ -27,6 +39,7 @@ async def get_reddit_comment(db: db_dependency,
                              subreddit: Optional[str] = None,
                              ready_to_be_replied_to: Optional[bool] = None,
                              error: Optional[str] = None,
+
                              media_id: Optional[str] = None,
                              ):
     query = db.query(models.RedditComment)
@@ -65,6 +78,7 @@ async def get_reddit_comment(db: db_dependency,
 
 @app.patch("/reddit_comments/update-by-row-id/{row_id}")
 async def update_reddit_comment_by_row_id(db: db_dependency,
+                                          token: Annotated[str, Depends(validate_token)],
                                           row_id: int,
                                           update_data: UpdateRedditComment):
     comment = db.query(models.RedditComment).filter(models.RedditComment.id == row_id).first()
@@ -80,6 +94,7 @@ async def update_reddit_comment_by_row_id(db: db_dependency,
 
 @app.patch("/reddit_comments/update-by-media-id/{media_id}")
 async def update_reddit_comment_by_row_id(db: db_dependency,
+                                          token: Annotated[str, Depends(validate_token)],
                                           media_id: str,
                                           update_data: UpdateRedditComment):
     comment = db.query(models.RedditComment).filter(models.RedditComment.media_id == media_id).first()
@@ -91,3 +106,5 @@ async def update_reddit_comment_by_row_id(db: db_dependency,
     db.commit()
     db.refresh(comment)
     return comment
+
+
