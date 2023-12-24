@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from credentials import Credentials
+from config import Credentials
 
 credentials = Credentials()
 database_connection_string = credentials.connection_string
