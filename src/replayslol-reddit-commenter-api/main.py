@@ -11,7 +11,7 @@ import uvicorn
 app = FastAPI()
 config = Config()
 token_auth_scheme = HTTPBearer()
-host_address, valid_tokens, ssl_certfile, ssl_keyfile = config.host, config.valid_tokens, config.ssl_certfile, config.ssl_keyfile
+valid_tokens, ssl_certfile, ssl_keyfile = config.valid_tokens, config.ssl_certfile, config.ssl_keyfile
 models.Base.metadata.create_all(bind=engine)
 db_dependency = Annotated[Session, Depends(get_db)]
 
@@ -108,5 +108,5 @@ async def update_reddit_comment_by_row_id(db: db_dependency,
     db.refresh(comment)
     return comment
 
-if __name__ == "__main__":
-    uvicorn.run(app, host=host_address, port=443, ssl_certfile=ssl_certfile, ssl_keyfile=ssl_keyfile)
+#if __name__ == "__main__":
+#    uvicorn.run(app, host=host_address, port=443, ssl_certfile=ssl_certfile, ssl_keyfile=ssl_keyfile)
