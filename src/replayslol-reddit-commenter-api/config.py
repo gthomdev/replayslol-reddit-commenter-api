@@ -9,3 +9,4 @@ class Config:
         self.valid_tokens = os.environ.get('VALID_TOKENS').split(',')
         self.ssl_keyfile = os.environ.get('SSL_KEYFILE')
         self.ssl_certfile = os.environ.get('SSL_CERTFILE')
+        self.host_address = os.environ.get('HOST_ADDRESS')
