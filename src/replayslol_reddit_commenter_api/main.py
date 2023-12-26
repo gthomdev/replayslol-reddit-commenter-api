@@ -2,10 +2,10 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from typing import Annotated, Optional
-import models
-from schemas import UpdateRedditComment
-from database import get_db, engine
-from config import Config
+from . import models
+from .schemas import UpdateRedditComment
+from .database import get_db, engine
+from .config import Config
 import uvicorn
 
 app = FastAPI()
@@ -40,7 +40,6 @@ async def get_reddit_comment(db: db_dependency,
                              subreddit: Optional[str] = None,
                              ready_to_be_replied_to: Optional[bool] = None,
                              error: Optional[str] = None,
-
                              media_id: Optional[str] = None,
                              ):
     query = db.query(models.RedditComment)
