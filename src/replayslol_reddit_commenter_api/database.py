@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from config import Config
+from .config import Config
 
 config = Config()
 database_connection_string = config.connection_string
