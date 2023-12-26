@@ -18,7 +18,6 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 def validate_token(http_auth_credentials: HTTPAuthorizationCredentials = Depends(token_auth_scheme)):
     if http_auth_credentials.scheme != "Bearer":
-        print(str(http_auth_credentials))
         raise HTTPException(status_code=403, detail="Invalid authentication scheme")
     if http_auth_credentials.credentials not in valid_tokens:
         raise HTTPException(status_code=403, detail="Invalid token")
