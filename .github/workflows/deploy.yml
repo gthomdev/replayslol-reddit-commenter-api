@@ -73,6 +73,6 @@ jobs:
           script: |
             cd replayslol-reddit-commenter-api
             source venv/bin/activate
-            authbind --deep python3 -m src.replayslol_commenter_api.main
+            authbind --deep python3 -m src.replayslol_reddit_commenter_api.main
             
 
