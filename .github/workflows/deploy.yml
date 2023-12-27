@@ -57,7 +57,13 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            ps aux | grep [r]eplayslol_reddit_commenter_api.main | awk '{print $2}' | xargs kill -9
+            PID=$(ps aux | grep "[r]eplayslol_reddit_commenter_api.main" | awk '{print $2}')
+            if [ ! -z "$PID" ]; then
+              echo "Process found. Killing process ID $PID."
+              kill $PID
+            else
+              echo "Process not running."
+            fi
       - name: SSH and start uvicorn
         uses: appleboy/ssh-action@master
         with:
