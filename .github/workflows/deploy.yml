@@ -35,6 +35,7 @@ jobs:
         target: "/home/replayslol-reddit-scraper/replayslol-reddit-commenter-api"
 
   restart-uvicorn:
+    needs: deploy
     runs-on: ubuntu-latest
     steps:
       - name: SSH and Restart Uvicorn
