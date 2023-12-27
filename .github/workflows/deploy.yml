@@ -73,7 +73,7 @@ jobs:
           script: |
             cd replayslol-reddit-commenter-api
             source venv/bin/activate
-            nohup authbind --deep python3 -m src.replayslol_reddit_commenter_api.main &
-            disown
-            
+            nohup authbind --deep python3 -m src.replayslol_reddit_commenter_api.main > server.log 2>&1 &
+            echo "Server started"
+            exit
 
