@@ -50,19 +50,23 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
-      - name: SSH and Restart Uvicorn
+      - name: SSH and kill existing process
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            # Kill the current Uvicorn process
-            pkill -f 'authbind --deep python main.py'
-
-            # Wait a bit to ensure the process has stopped
-            sleep 5
-
-            # Start Uvicorn again
-            nohup authbind --deep python main.py > /dev/null 2>&1 &
+            ps aux | grep [r]eplayslol_commenter_api.main | awk {'print $2'} | xargs kill
+      - name: SSH and start uvicorn
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd replayslol-reddit-commenter-api
+            source venv/bin/activate
+            authbind --deep python3 -m src.replayslol_commenter_api.main
+            
 
