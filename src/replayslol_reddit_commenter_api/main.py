@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from typing import Annotated, Optional
-from . import models
+import models
 from .schemas import UpdateRedditComment
 from .database import get_db, engine
 from .config import Config
