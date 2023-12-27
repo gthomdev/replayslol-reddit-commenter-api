@@ -34,6 +34,18 @@ jobs:
         source: "."
         target: "/home/replayslol-reddit-scraper/replayslol-reddit-commenter-api"
 
+    - name: Set up Python Environment on VPS
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd replayslol-reddit-commenter-api
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
   restart-uvicorn:
     needs: deploy
     runs-on: ubuntu-latest
