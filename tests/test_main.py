@@ -7,7 +7,3 @@ client = TestClient(main.app)
 def test_get_reddit_comment():
     response = client.get("/reddit_comments/")
     assert response.status_code == 403
-
-def test_get_reddit_comment():
-    response = client.get("/reddit_comments/")
-    assert response.status_code == 403
