@@ -10,3 +10,4 @@ class Config:
         self.ssl_keyfile = os.environ.get('SSL_KEYFILE')
         self.ssl_certfile = os.environ.get('SSL_CERTFILE')
         self.host_address = os.environ.get('HOST_ADDRESS')
+        self.environment = os.environ.get('ENVIRONMENT')

@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
+from sqlalchemy import desc
 from typing import Annotated, Optional
 from . import models
 from .schemas import UpdateRedditComment
@@ -11,7 +12,7 @@ import uvicorn
 app = FastAPI()
 config = Config()
 token_auth_scheme = HTTPBearer()
-host_address, valid_tokens, ssl_certfile, ssl_keyfile = config.host_address, config.valid_tokens, config.ssl_certfile, config.ssl_keyfile
+environment, host_address, valid_tokens, ssl_certfile, ssl_keyfile = config.environment, config.host_address, config.valid_tokens, config.ssl_certfile, config.ssl_keyfile
 models.Base.metadata.create_all(bind=engine)
 db_dependency = Annotated[Session, Depends(get_db)]
 
@@ -72,8 +73,10 @@ async def get_reddit_comment(db: db_dependency,
         query = query.filter(models.RedditComment.error == error)
     if media_id is not None:
         query = query.filter(models.RedditComment.media_id == media_id)
-    return query.all() if not None else HTTPException(status_code=404, detail="RedditComment not found")
-
+    results = query.order_by(desc(models.RedditComment.id)).limit(20).all()
+    if not results:
+        raise HTTPException(status_code=404, detail="RedditComment not found")
+    return results
 
 @app.patch("/reddit_comments/update-by-row-id/{row_id}")
 async def update_reddit_comment_by_row_id(db: db_dependency,
@@ -107,4 +110,7 @@ async def update_reddit_comment_by_row_id(db: db_dependency,
     return comment
 
 if __name__ == "__main__":
-    uvicorn.run(app, host=host_address, port=443, ssl_certfile=ssl_certfile, ssl_keyfile=ssl_keyfile)
+    if environment == "development":
+        uvicorn.run(app, host="127.0.0.1", port=8000)
+    elif environment == "production":
+        uvicorn.run(app, host=host_address, port=443, ssl_certfile=ssl_certfile, ssl_keyfile=ssl_keyfile)
