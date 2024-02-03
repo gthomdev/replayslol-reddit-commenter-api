@@ -109,7 +109,7 @@ async def get_reddit_comments_since_interval(db: db_dependency,
     Returns:
     A list of Reddit comments since the specified interval.
     """
-    time_since_interval = datetime.now() - timedelta(hours=interval)
+    time_since_interval = datetime.now() - timedelta(hours=int(interval))
     query = db.query(models.RedditComment).filter(models.RedditComment.created_at >= time_since_interval)
     results = query.order_by(desc(models.RedditComment.id)).limit(20).all()
     if not results:
