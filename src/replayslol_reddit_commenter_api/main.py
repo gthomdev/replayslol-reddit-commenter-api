@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
+from datetime import datetime, timedelta
 from sqlalchemy import desc
 from typing import Annotated, Optional
 from . import models
@@ -93,6 +94,27 @@ async def update_reddit_comment_by_row_id(db: db_dependency,
     db.refresh(comment)
     return comment
 
+@app.get("/reddit_comments/get_reddit_comments_since_interval/{interval}")
+async def get_reddit_comments_since_interval(db: db_dependency,
+                                             token: Annotated[str, Depends(validate_token)],
+                                             interval: int):
+    """
+    This method retrieves Reddit comments since a specified interval.
+
+    Parameters:
+    db: Database session.
+    token: Authorization token.
+    interval: The interval in hours from the current time.
+
+    Returns:
+    A list of Reddit comments since the specified interval.
+    """
+    time_since_interval = datetime.now() - timedelta(hours=interval)
+    query = db.query(models.RedditComment).filter(models.RedditComment.created_at >= time_since_interval)
+    results = query.order_by(desc(models.RedditComment.id)).limit(20).all()
+    if not results:
+        raise HTTPException(status_code=404, detail="RedditComment not found")
+    return results
 
 @app.patch("/reddit_comments/update-by-media-id/{media_id}")
 async def update_reddit_comment_by_row_id(db: db_dependency,
